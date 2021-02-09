@@ -2,74 +2,70 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Panda
+namespace Contamination
 {
-    [SerializeField] private Color colorNormal;
-    [SerializeField] private Color colorContaminated;
-
-    private bool IsContaminated { get; set; } /* true : have been contaminated */ 
-    private bool IsContagious { get; set; } /*this should could help to set an infection rate*/
-    private Vector3 Position { get; set; } /*contains the position into a cube */ 
-    private List<Panda> Neighboors { get; set; } /*this will contains all the Neighboors that should be contaminated*/ 
-    private GameObject GameObject { get; set; }
-
-    public Panda(Vector3 position)
-        ///this will set a new Panda with his/her position into the cube and if is contaminated and contagious/// 
+    public class Panda : MonoBehaviour
     {
-        this.Position = position;
-        //this.transform.position = position;
-        this.IsContaminated = false;
-        this.IsContagious = false;
-        this.GameObject = GameObject.Instantiate(Contamination_Manager.instance.gameObject, position, Quaternion.identity);
-    }
+        [SerializeField] private Color colorNormal;
+        [SerializeField] private Color colorContaminated;
 
-    protected void Contaminate()
-        /// this change some parameter when a neighboord contaminate this///  
-    {
-        this.IsContaminated = true;
-        this.IsContagious = true;
-    }
+        private bool isContaminated; /* true : have been contaminated */
+        private bool isContagious; /*this should could help to set an infection rate*/
+        [SerializeField] private List<Panda> neighboors; /*this will contains all the Neighboors that should be contaminated*/
 
-
-    protected void FindNeighboors(List<Panda> forest)
-        ///  ////
-    {
-        List<Vector3> listPositionPossible = new List<Vector3>();
-
-        for (int i = 0; i < 3; i++)
+        private void Start()
         {
-            Vector3 temp = Vector3.zero;
-            Vector3 temp2 = Vector3.zero;
-
-            temp[i] = 1;
-            temp2[i] = -1;
-
-            temp += this.Position;
-            temp2 += this.Position;
-
-            if(temp[i] <= 2)
-            {
-                listPositionPossible.Add(temp);
-            }
-
-            if(temp2[i] >= 0)
-            {
-                listPositionPossible.Add(temp2);
-            }
-
+            isContagious = false;
+            isContaminated = false;
+            neighboors = new List<Panda>();
         }
 
-        foreach (Panda otherPanda in forest)
+
+
+        public void FindNeighboors(List<Panda> forest)
+        /// this will find all the neighboors of of current panda amoung a list in parameter calls forest ////
         {
-            foreach (Vector3 positionPossible in listPositionPossible)
+            
+            List<Vector3> listPositionPossible = new List<Vector3>();
+
+            for (int i = 0; i < 3; i++)
             {
-                if(otherPanda.Position == positionPossible)
+                Vector3 temp = Vector3.zero;
+                Vector3 temp2 = Vector3.zero;
+
+                temp[i] = 1;
+                temp2[i] = -1;
+
+                temp += this.transform.position;
+                temp2 += this.transform.position;
+
+                if (temp[i] <= 2)
                 {
-                    this.Neighboors.Add(otherPanda);
+                    listPositionPossible.Add(temp);
+                }
+
+                if (temp2[i] >= 0)
+                {
+                    listPositionPossible.Add(temp2);
+                }
+
+            }
+
+            foreach (Panda otherPanda in forest)
+            {
+                if(otherPanda != this)
+                {
+                    foreach (Vector3 positionPossible in listPositionPossible)
+                    {
+                        if (otherPanda.transform.position == positionPossible)
+                        {
+                            this.neighboors.Add(otherPanda);
+                        }
+                    }
                 }
             }
-        }
 
-        return;
+            return;
+        }
     }
 }

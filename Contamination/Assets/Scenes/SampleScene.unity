@@ -309,3 +309,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc074982b2f1dcd488eedf64b235a6c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabPanda: {fileID: 4996269859816114222, guid: 99c82f1a4040cc64abf5f11e98f380ba,
+    type: 3}
