@@ -9,28 +9,36 @@ namespace Contamination
         #region Variables
         [SerializeField] private Color colorNormal;
         [SerializeField] private Color colorContaminated;
+        [SerializeField] private Color colorSelected;
 
         [SerializeField] private bool isContaminated = false; /* true : have been contaminated */
         [SerializeField] private bool isContagious = false; /*this should could help to set an infection rate*/
 
         [SerializeField] private List<Panda> neighboors; /*this will contains all the Neighboors that should be contaminated*/
+
+        private Material m_material;
         #endregion
 
+        private void Start()
+        {
+            m_material = this.gameObject.GetComponent<Renderer>().material;
+        }
         public void IsContaminated()
         {
             ///<summary> this will changes attributes when this panda is contaminated as color or if he is contagious</summary>
             isContagious = true;
             isContaminated = true;
-            this.gameObject.GetComponent<Renderer>().material.color = colorContaminated;
-            Contamination_Manager.instance.AddContagiousPanda(this);
+            m_material.color = colorContaminated;
+            ContaminationManager.instance.AddContagiousPanda(this);
         }
 
 
         public void cure()
         {
             ///<summary> this will change attributes when a panda is cure in this way he/she can't be contaminated again and will no longueur spread the virus</summary>
+            ///This idea was not finished yet
             isContagious = false;
-            Contamination_Manager.instance.RemoveContagiousPanda(this);
+            ContaminationManager.instance.RemoveContagiousPanda(this);
         }
         public void Contaminate()
         {
@@ -63,7 +71,9 @@ namespace Contamination
         {
             
             List<Vector3> listPositionPossible = new List<Vector3>();
+            int forestDimension = ContaminationManager.instance.forestDimension;
 
+            //We set a list of neighboor possible position 
             for (int i = 0; i < 3; i++)
             {
                 Vector3 temp = Vector3.zero;
@@ -75,7 +85,7 @@ namespace Contamination
                 temp += this.transform.position;
                 temp2 += this.transform.position;
 
-                if (temp[i] <= 2)
+                if (temp[i] < forestDimension)
                 {
                     listPositionPossible.Add(temp);
                 }
@@ -95,13 +105,31 @@ namespace Contamination
                     {
                         if (otherPanda.transform.position == positionPossible)
                         {
-                            this.neighboors.Add(otherPanda);
+                            neighboors.Add(otherPanda);
                         }
                     }
                 }
             }
 
             return;
+        }
+
+        public void IsSelected()
+        {
+            ///<summary> This function is call when you select </summary>
+            m_material.color = colorSelected;
+        }
+
+        public void Unselect()
+            ///<summary> This function is call when you unselect a panda by clicking on another one</summary>
+        {
+            m_material.color = colorNormal;
+        }
+
+        public void KillIt()
+        {
+            ///<summary>This will destroy the object panda</summary>
+            Destroy(this.gameObject);
         }
     }
 }
